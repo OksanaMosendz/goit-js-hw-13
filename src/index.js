@@ -10,9 +10,14 @@ const seachForm=document.querySelector('.search-form');
 const gallery=document.querySelector('.gallery');
 const loadMoreBtn=document.querySelector('.load-more');
 
+let allCards=[];
+
 seachForm.addEventListener("submit", function(event){
   event.preventDefault()
 });
+
+loadMoreBtn.style.display='none';
+
 
 const API={
   url:'https://pixabay.com/api/',
@@ -22,7 +27,7 @@ const API={
   orientation: 'horizontal',
   safesearch: true,
   page: 1,
-  per_page: 3,
+  per_page: 40,
   createURLtoFetch(){return `${this.url}?key=${this.key}&q=${this.q}&image_type=${this.image_type}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.per_page}`
 },
 }
@@ -45,21 +50,26 @@ const fetchImages=()=>{
   .then(response => response.json())
   
   .then(cards =>{
-    gallery.insertAdjacentHTML('beforeend', photoCard(cards.hits));
-    console.log(cards.hits);
-
-  if(cards.hits.length===0){
+    if(cards.hits.length===0){
   Notiflix.Notify.failure( "Sorry, there are no images matching your search query. Please try again.")
   }
-  console.log(cards);})
-
+  gallery.insertAdjacentHTML('beforeend', photoCard(cards.hits));
+    console.log(cards.hits);
+  allCards=cards;
+  input.value='';
+  loadMoreBtn.style.display='block';
+   console.log(allCards);})
   .catch(error => console.log(error))
-  .finally(input.value='');
 }
+
 
 const loadMore=()=>{
   API.page=API.page+1;
   fetchImages();
+  if (document.querySelectorAll('.photo-card').length===allCards.totalHits){
+    loadMoreBtn.style.display='none';
+    Notiflix.Notify.failure( "We're sorry, but you've reached the end of search results.");
+  }
 }
 
 
