@@ -5,12 +5,13 @@ import SimpleLightbox from "simplelightbox";
 const axios = require('axios').default;
 
 const input=document.querySelector('#search-form');
+const submitBtn = document.querySelector('form.search-form button[type=submit]');
 console.log(input);
 
 const API={
   url:'https://pixabay.com/api/',
   key:'22611406-1fc8dc647f338efc8b1d9d866',
-  q: 'dog',
+  q: '',
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
@@ -20,6 +21,10 @@ const API={
 },}
 
 
+const x=()=>{
+  API.q=input.value;
+  console.log (input.value);
+  console.log ('rkbr');
 fetch(API.createURLtoFetch())
   .then(response => response.json())
   .then(cards =>{
@@ -31,4 +36,14 @@ fetch(API.createURLtoFetch())
   }
   )
   .catch(error => console.log(error));
+}
+submitBtn.submit=function(event){
+  event.preventDefault();
+console.log('сабмит');  }
+
+
+  submitBtn.addEventListener('click',x);
+
+
+  console.log(submitBtn)
 
