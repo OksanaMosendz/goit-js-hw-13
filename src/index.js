@@ -4,9 +4,15 @@ import Notiflix from "notiflix";
 import SimpleLightbox from "simplelightbox";
 const axios = require('axios').default;
 
-const input=document.querySelector('#search-form');
-const submitBtn = document.querySelector('form.search-form button[type=submit]');
-console.log(input);
+const input=document.querySelector('[name=searchQuery]');
+const submitBtn=document.querySelector('[type=submit]');
+const seachForm=document.querySelector('.search-form');
+const gallery=document.querySelector('.gallery');
+const loadMoreBtn=document.querySelector('.load-more');
+
+seachForm.addEventListener("submit", function(event){
+  event.preventDefault()
+});
 
 const API={
   url:'https://pixabay.com/api/',
@@ -16,34 +22,48 @@ const API={
   orientation: 'horizontal',
   safesearch: true,
   page: 1,
-  per_page: 40,
+  per_page: 3,
   createURLtoFetch(){return `${this.url}?key=${this.key}&q=${this.q}&image_type=${this.image_type}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.per_page}`
-},}
-
-
-const x=()=>{
-  API.q=input.value;
-  console.log (input.value);
-  console.log ('rkbr');
-fetch(API.createURLtoFetch())
-  .then(response => response.json())
-  .then(cards =>{
-    console.log(cards.hits);
-    if(cards.hits.length===0){
-      Notiflix.Notify.failure( "Sorry, there are no images matching your search query. Please try again.")
-    }
-    console.log(cards);
-  }
-  )
-  .catch(error => console.log(error));
+},
 }
-submitBtn.submit=function(event){
-  event.preventDefault();
-console.log('сабмит');  }
+
+const xs=()=>{
+  if (input.value===''){
+    return;
+  }
+  else { 
+  gallery.innerHTML='';
+  API.q=input.value;
+  API.page=1;
+  console.log (input.value);
+  fetchImages();
+}}
 
 
-  submitBtn.addEventListener('click',x);
+const fetchImages=()=>{
+  fetch(API.createURLtoFetch())
+  .then(response => response.json())
+  
+  .then(cards =>{
+    gallery.insertAdjacentHTML('beforeend', photoCard(cards.hits));
+    console.log(cards.hits);
+
+  if(cards.hits.length===0){
+  Notiflix.Notify.failure( "Sorry, there are no images matching your search query. Please try again.")
+  }
+  console.log(cards);})
+
+  .catch(error => console.log(error))
+  .finally(input.value='');
+}
+
+const loadMore=()=>{
+  API.page=API.page+1;
+  fetchImages();
+}
 
 
-  console.log(submitBtn)
+loadMoreBtn.addEventListener('click',loadMore);
+submitBtn.addEventListener('click',xs);
+
 
