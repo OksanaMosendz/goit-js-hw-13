@@ -2,7 +2,8 @@ import './sass/main.scss';
 import photoCardTempl from './templates/photo-card.hbs'
 import {setPhotoCardStyle, setImgStyle, setInfoItemStyle, setInfoStyle, setFormStyle, setGalleryStyle, setLoadBtnStyle}  from './js/styles.js';
 import Notiflix from "notiflix";
-import SimpleLightbox from "simplelightbox";
+import SimpleLightbox from 'simplelightbox';
+import '../node_modules/simplelightbox/dist/simple-lightbox.css';
 const axios = require('axios').default;
 
 const input=document.querySelector('[name=searchQuery]');
@@ -10,6 +11,10 @@ const submitBtn=document.querySelector('[type=submit]');
 const seachForm=document.querySelector('.search-form');
 const gallery=document.querySelector('.gallery');
 const loadMoreBtn=document.querySelector('.load-more');
+
+let galleryS = new SimpleLightbox('.gallery a');
+galleryS.on('show.simplelightbox', function () {
+});
 
 seachForm.addEventListener("submit", function(event){
   event.preventDefault()
@@ -51,12 +56,14 @@ async function fetchImages(){
 }}
 
   const renderCardsMarkup=(data)=>{
+    
     if(data.totalHits===0){
       loadMoreBtn.style.display='none';
       Notiflix.Notify.failure( "Sorry, there are no images matching your search query. Please try again.");
     return;}
     else { gallery.insertAdjacentHTML('beforeend', photoCardTempl(data.hits));
     setStyles(data);
+    galleryS.refresh();
           if(API.page===1){Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);}
         }
     input.value='';
@@ -84,10 +91,7 @@ const loadMore=()=>{
   fetchImages().then(data=>{renderCardsMarkup(data)});
 }
 
-let galleryS = new SimpleLightbox('.gallery a');
-galleryS.on('show.simplelightbox', function () {
-  gallery.next();
-});
+
 
 
 setGalleryStyle(gallery.style);
