@@ -25,7 +25,7 @@ const API={
   orientation: 'horizontal',
   safesearch: true,
   page: 1,
-  per_page: 40,
+  per_page: 10,
   createURLtoFetch(){return `${this.url}?key=${this.key}&q=${this.q}&image_type=${this.image_type}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.per_page}`},
 }
 
@@ -35,22 +35,34 @@ const seachImages=()=>{
   }
   else { 
   gallery.innerHTML='';
-  API.q=input.value;
+  API.q=(input.value).trim();
   API.page=1;
-  fetchImages();
+ fetchImages().then(data=>{renderCardsMarkup(data)});
 }}
 
 
-const fetchImages=()=>{
-  axios.get(API.createURLtoFetch())
-  .then(response => response.json())
-  .then(cards =>{
-    if(cards.totalHits===0){
+
+async function fetchImages(){
+ try {const response= await axios.get(API.createURLtoFetch());
+   const data=await response.data;
+   return data;
+  } catch (error) {
+  console.log("error", error);
+}}
+
+  const renderCardsMarkup=(data)=>{
+    if(data.totalHits===0){
+      loadMoreBtn.style.display='none';
       Notiflix.Notify.failure( "Sorry, there are no images matching your search query. Please try again.");
     return;}
-    else { gallery.insertAdjacentHTML('beforeend', photoCardTempl(cards.hits));
-          if(API.page===1){Notiflix.Notify.success( `Hooray! We found ${cards.totalHits} images.`);}
+    else { gallery.insertAdjacentHTML('beforeend', photoCardTempl(data.hits));
+    setStyles(data);
+          if(API.page===1){Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);}
+        }
+    input.value='';
+ }
 
+  const setStyles=(data)=>{
       const info=document.querySelectorAll('.info');
       const photoCards=document.querySelectorAll('.photo-card');
       const imgs=gallery.querySelectorAll('img');
@@ -61,25 +73,25 @@ const fetchImages=()=>{
       setInfoItemStyle(infoItems);
       setInfoStyle(info);
       
-      if (photoCards.length===cards.totalHits){
+      if (photoCards.length>0&&photoCards.length===data.totalHits){
         loadMoreBtn.style.display='none';
         Notiflix.Notify.info( "We're sorry, but you've reached the end of search results.");
       } else setLoadBtnStyle(loadMoreBtn.style);
-    }
-  })
-  .catch(error => console.log(error))
-  .finally(input.value='');
-}
+  }
 
 const loadMore=()=>{
   API.page=API.page+1;
-  fetchImages();
+  fetchImages().then(data=>{renderCardsMarkup(data)});
 }
+
+let galleryS = new SimpleLightbox('.gallery a');
+galleryS.on('show.simplelightbox', function () {
+  gallery.next();
+});
+
 
 setGalleryStyle(gallery.style);
 setFormStyle(seachForm.style);
 
 loadMoreBtn.addEventListener('click',loadMore);
 submitBtn.addEventListener('click',seachImages);
-
-

@@ -19,7 +19,7 @@ const setImgStyle=(imgs)=>{
   el.style.display='block';
   el.style.width='100%';
   el.style.marginRight='10px';
-  el.style.height='100%';
+  el.style.height='200px';
 });
 }
 
@@ -33,7 +33,7 @@ const setInfoStyle=(info)=>{
 const setInfoItemStyle=(infoItems)=>{
   infoItems.forEach(el => {
   el.style.display='flex';
-  el.style.fontSize='10px';
+  el.style.fontSize='15px';
   el.style.flexDirection='column';
 });
 }
