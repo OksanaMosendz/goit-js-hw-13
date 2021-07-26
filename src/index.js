@@ -13,8 +13,7 @@ const gallery=document.querySelector('.gallery');
 const loadMoreBtn=document.querySelector('.load-more');
 
 let galleryS = new SimpleLightbox('.gallery a');
-galleryS.on('show.simplelightbox', function () {
-});
+
 
 
 
@@ -64,6 +63,8 @@ async function fetchImages(){
       addScroll();
       setMarkUpStyles(data);
       galleryS.refresh();
+      galleryS.on('show.simplelightbox', function () {
+      });
       if(API.page===1){Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);}
     }
     input.value='';
