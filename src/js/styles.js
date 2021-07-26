@@ -61,4 +61,23 @@ const setLoadBtnStyle=(el)=>{
   el.borderRadius='5px';
 }
 
-export {setPhotoCardStyle, setImgStyle, setInfoItemStyle, setInfoStyle, setFormStyle, setGalleryStyle, setLoadBtnStyle}  
+const loadMoreBtn=document.querySelector('.load-more');
+
+const setMarkUpStyles=(data)=>{
+  const info=document.querySelectorAll('.info');
+  const photoCards=document.querySelectorAll('.photo-card');
+  const imgs=document.querySelectorAll('.photo-card img');
+  const infoItems=document.querySelectorAll('.info-item');
+  
+  setPhotoCardStyle(photoCards);
+  setImgStyle(imgs);
+  setInfoItemStyle(infoItems);
+  setInfoStyle(info);
+  
+  if (photoCards.length>0&&photoCards.length===data.totalHits){
+    loadMoreBtn.style.display='none';
+    Notiflix.Notify.info( "We're sorry, but you've reached the end of search results.");
+  } else setLoadBtnStyle(loadMoreBtn.style);
+}
+
+export {setMarkUpStyles, setFormStyle, setGalleryStyle}  
